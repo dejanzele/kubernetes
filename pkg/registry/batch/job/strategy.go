@@ -121,9 +121,6 @@ func (jobStrategy) PrepareForCreate(ctx context.Context, obj runtime.Object) {
 			job.Spec.PodFailurePolicy.Rules = job.Spec.PodFailurePolicy.Rules[:index]
 		}
 	}
-	if !utilfeature.DefaultFeatureGate.Enabled(features.JobPodReplacementPolicy) {
-		job.Spec.PodReplacementPolicy = nil
-	}
 
 	pod.DropDisabledTemplateFields(&job.Spec.Template, nil)
 }
@@ -150,9 +147,6 @@ func (jobStrategy) PrepareForUpdate(ctx context.Context, obj, old runtime.Object
 		// had BackoffLimitPerIndex set, the new Job will also have it, so the
 		// validation of the pod failure policy with FailIndex rules will
 		// continue to pass.
-	}
-	if !utilfeature.DefaultFeatureGate.Enabled(features.JobPodReplacementPolicy) && oldJob.Spec.PodReplacementPolicy == nil {
-		newJob.Spec.PodReplacementPolicy = nil
 	}
 
 	pod.DropDisabledTemplateFields(&newJob.Spec.Template, &oldJob.Spec.Template)
